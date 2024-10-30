@@ -1,4 +1,4 @@
-package com.crm.entity;
+package com.crm.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
