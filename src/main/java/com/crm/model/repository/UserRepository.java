@@ -1,6 +1,6 @@
 package com.crm.model.repository;
 
-import com.crm.model.entity.user.AppUser;
+import com.crm.model.entity.AppUser;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

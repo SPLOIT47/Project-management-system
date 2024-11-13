@@ -1,16 +1,20 @@
 package com.crm.config;
 
-import com.crm.service.NotificationService;
+import javafx.stage.Stage;
+import lombok.Setter;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+@Setter
 @Configuration
 @ComponentScan(basePackages = "com.crm")
 public class AppConfig {
 
-    private final NotificationService notificationService;
+    private Stage primaryStage;
 
-    public AppConfig(NotificationService notificationService) {
-        this.notificationService = notificationService;
+    @Bean
+    public Stage primaryStage() {
+        return this.primaryStage;
     }
 }

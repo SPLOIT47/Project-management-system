@@ -1,6 +1,6 @@
 package com.crm.controller;
 
-import com.crm.model.entity.user.AppUser;
+import com.crm.model.entity.AppUser;
 import org.springframework.stereotype.Controller;
 
 import java.util.Collection;

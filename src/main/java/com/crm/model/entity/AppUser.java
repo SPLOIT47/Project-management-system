@@ -1,14 +1,7 @@
-package com.crm.model.entity.user;
+package com.crm.model.entity;
 
-import com.crm.model.entity.Notification;
-import com.crm.model.entity.Task;
 import com.crm.model.observer.Observer;
-import com.crm.model.repository.TaskRepository;
-import com.crm.model.repository.UserRepository;
-import com.crm.service.NotificationService;
-import com.crm.service.ProjectService;
 import com.crm.utils.PasswordEncoder;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +26,7 @@ public class AppUser implements Observer {
 
     private String password;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @ManyToMany

@@ -1,7 +1,7 @@
 package com.crm.service;
 
 import com.crm.model.entity.Notification;
-import com.crm.model.entity.user.AppUser;
+import com.crm.model.entity.AppUser;
 import com.crm.model.repository.NotificationRepository;
 import jakarta.annotation.PreDestroy;
 import jakarta.transaction.Transactional;

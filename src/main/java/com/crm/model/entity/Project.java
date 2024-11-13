@@ -1,6 +1,6 @@
 package com.crm.model.entity;
 
-import com.crm.model.entity.user.AppUser;
+import com.crm.model.dto.ProjectDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
 
     private String description;
@@ -43,4 +44,11 @@ public class Project {
 
     @ManyToMany
     private Collection<AppUser> customers;
+
+    public Project(ProjectDTO projectDTO) {
+        this.name = projectDTO.projectName();
+        this.description = projectDTO.description();
+        this.customers = projectDTO.users();
+        this.tasks = projectDTO.tasks();
+    }
 }

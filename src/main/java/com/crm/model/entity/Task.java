@@ -1,7 +1,6 @@
 package com.crm.model.entity;
 
 import com.crm.enums.TaskStatus;
-import com.crm.model.entity.user.AppUser;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -44,5 +43,6 @@ public class Task {
     private int priority;
 
     @ManyToMany
+    @Builder.Default
     private Collection<AppUser> assignedUsers = new ArrayList<>();
 }

@@ -1,6 +1,5 @@
 package com.crm.model.entity;
 
-import com.crm.model.entity.user.AppUser;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
