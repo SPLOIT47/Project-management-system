@@ -1,38 +1,30 @@
-plugins {
-    id 'java'
-    id 'application'
-    id 'org.openjfx.javafxplugin' version '0.1.0'
-}
+allprojects {
+    group = 'com.crm'
+    version = '1.0.0'
 
-group = 'com.crm'
-version = '1.0.0'
 
-mainClassName = 'com.crm.Main'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+    repositories {
+        mavenCentral()
     }
 }
 
-repositories {
-    mavenCentral()
-}
+subprojects {
+    apply plugin: 'java'
 
-dependencies {
-    implementation 'org.springframework:spring-context:6.1.14'
-    implementation 'org.springframework.data:spring-data-jpa:3.3.5'
-    implementation 'org.springframework:spring-core:6.1.14'
-    implementation 'org.springframework:spring-orm:6.1.14'
-    implementation 'org.postgresql:postgresql:42.7.4'
-    implementation 'jakarta.persistence:jakarta.persistence-api:3.2.0'
-    implementation 'org.hibernate.orm:hibernate-core:6.3.2.Final'
-    implementation 'org.slf4j:slf4j-simple:2.0.7'
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
-}
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
 
-javafx {
-    version = "23.0.1"
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    dependencies {
+        implementation 'org.slf4j:slf4j-simple:2.0.7'
+        implementation 'org.springframework:spring-core:6.1.14'
+        implementation 'org.springframework:spring-context:6.1.14'
+        implementation 'jakarta.persistence:jakarta.persistence-api:3.2.0'
+        compileOnly 'org.projectlombok:lombok:1.18.34'
+        annotationProcessor 'org.projectlombok:lombok:1.18.34'
+        implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+    }
 }
