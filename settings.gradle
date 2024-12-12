@@ -1,5 +1,5 @@
 rootProject.name = 'CRM-system'
-//include 'Presentation'
+include 'Presentation'
 include 'Application'
 include 'Domain'
 include 'Infrastructure'

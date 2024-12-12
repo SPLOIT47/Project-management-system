@@ -35,8 +35,19 @@ public class UserService {
                         .contains(user.username()))
                 .forEach(userDto -> {
                     User user = new User(
-
+                            userDto.id(),
+                            userDto.username(),
+                            userDto.password()
                     );
+                    mergedUsers.add(user);
                 });
+
+        oldUsers.stream().filter(user -> !newUsers.stream()
+                    .map(UserDTO::username)
+                    .toList()
+                    .contains(user.getUsername()))
+                .forEach(mergedUsers::remove);
+
+        return mergedUsers.stream();
     }
 }

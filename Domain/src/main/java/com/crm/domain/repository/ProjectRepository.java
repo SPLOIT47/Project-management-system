@@ -11,31 +11,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ProjectRepository extends CrudRepository<Project, UUID> {
+public interface ProjectRepository {
+
+    Project save(Project project);
+
+    Optional<Project> findById(UUID id);
+
+    void delete(Project project);
 
     Optional<Project> getProjectsById(UUID id);
 
-    @Query("SELECT  p.name " +
-            "FROM  Project p " +
-            "WHERE p.manager.username = :username")
-    List<String> getProjectNamesByManagerUsername(@Param("username") String username);
+    List<String> getProjectNamesByManagerUsername(String username);
 
-    @Query("SELECT DISTINCT p " +
-            "FROM Project p " +
-            "WHERE p.manager.username = :username " +
-            "OR :username = ANY (SELECT u.username FROM p.customers u)")
-    List<Project> getProjectNamesRolesByUsername(@Param("username") String username);
+    List<Project> getProjectNamesRolesByUsername(String username);
 
-    @Query("SELECT p.customers " +
-            "FROM Project p " +
-            "WHERE p.name = :projectName AND p.manager.username = :managerName")
-    List<User> getProjectUsersByProjectNameAndManagerName(
-            @Param("projectName") String projectName,
-            @Param("managerName") String managerName);
+    List<User> getProjectUsersByProjectNameAndManagerName(String projectName, String managerName);
 
-    @Query("SELECT p.customers FROM Project p WHERE p.id = :projectId")
-    List<User> getUsersByProjectId(@Param("projectId") UUID projectId);
+    List<User> getUsersByProjectId(UUID projectId);
 
-    @Query("SELECT p.tasks FROM Project p WHERE p.id = :projectId")
-    List<Task> getTasksByProjectId(@Param("projectId") UUID projectId);
+    List<Task> getTasksByProjectId(UUID projectId);
 }

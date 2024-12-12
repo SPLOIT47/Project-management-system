@@ -15,6 +15,7 @@ public class MapperConfig {
     @PostConstruct
     public void init() {
         Mapper.createMapper(User.class, UserDTO.class, (User user) -> new UserDTO(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword()
         ));

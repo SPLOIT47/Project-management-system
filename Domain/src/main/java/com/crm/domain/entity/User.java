@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,6 +42,14 @@ public class User {
 
     public User(String username, String password) {
         this.id = UUID.randomUUID();
+        this.username = username;
+        this.password = password;
+        this.tasks = new ArrayList<>();
+        this.notifications = new ArrayList<>();
+    }
+
+    public User(UUID id, String username, String password) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.tasks = new ArrayList<>();

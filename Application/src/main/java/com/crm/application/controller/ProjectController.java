@@ -25,16 +25,16 @@ public class ProjectController {
         this.sessionManager = sessionManager;
     }
 
-    public Optional<Project> createProject(String managerUsername , String name, String description) {
-        return this.projectService.createNewProject(managerUsername, name, description);
-    }
-
     public void updateProject(ProjectDTO projectDTO) {
         this.projectService.updateProject(projectDTO);
     }
 
     public Stream<ProjectDTO> getProjectNamesByUsername(String username) {
         return this.projectService.getProjectDTOByProjectName(username);
+    }
+
+    public void createProject(String managerName, String projectName, String description) {
+        this.projectService.createProject(managerName, projectName, description);
     }
 
     public Stream<UserDTO> getUsersByProjectName(String projectName) {

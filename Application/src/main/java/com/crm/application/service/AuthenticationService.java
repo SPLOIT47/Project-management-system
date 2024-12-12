@@ -4,6 +4,7 @@ import com.crm.application.dto.UserDTO;
 import com.crm.domain.service.PasswordEncoder;
 import com.crm.domain.entity.User;
 import com.crm.domain.repository.UserRepository;
+import com.crm.domain.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,19 +12,19 @@ import java.util.Optional;
 
 @Service
 public class AuthenticationService {
+    private final UserManager userManager;
     private final UserRepository userRepository;
 
     @Autowired
-    public AuthenticationService(UserRepository userRepository) {
+    public AuthenticationService(
+            UserManager userManager,
+            UserRepository userRepository) {
+        this.userManager = userManager;
         this.userRepository = userRepository;
     }
 
     public User registerUser(UserDTO userDTO) {
-        User appUser = new User();
-        appUser.setUsername(userDTO.username());
-        appUser.setPassword(userDTO.password());
-
-        return this.userRepository.save(appUser);
+        return this.userManager.createUser(userDTO.username(), userDTO.password());
     }
 
     public Optional<User> AuthenticateUser(UserDTO user) {

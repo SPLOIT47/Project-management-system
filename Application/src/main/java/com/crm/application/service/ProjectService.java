@@ -8,40 +8,36 @@ import com.crm.domain.entity.Notification;
 import com.crm.domain.entity.Project;
 import com.crm.domain.entity.Task;
 import com.crm.domain.entity.User;
-import com.crm.domain.enums.TaskStatus;
 import com.crm.domain.repository.ProjectRepository;
-import com.crm.domain.repository.TaskRepository;
 import com.crm.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
     private final NotificationService notificationService;
+    private final UserService userService;
     private final UserRepository userRepository;
 
     @Autowired
     public ProjectService(
             ProjectRepository repository,
-            TaskRepository taskRepository,
+            TaskService taskService,
             NotificationService notificationService,
+            UserService userService,
             UserRepository userRepository) {
         this.projectRepository = repository;
-        this.taskRepository = taskRepository;
+        this.taskService = taskService;
         this.notificationService = notificationService;
+        this.userService = userService;
         this.userRepository = userRepository;
     }
 
@@ -76,51 +72,24 @@ public class ProjectService {
     public void updateProject(ProjectDTO projectDTO) {
         Project existringProject = this.projectRepository.getProjectsById(projectDTO.id()).orElseThrow();
 
-        Collection<User> updatedUsers = this.userRepository.findAllByUsername(projectDTO
-                .users()
-                .stream()
-                .map(UserDTO::username)
-                .collect(Collectors.toList()));
-
-        Set<User> existingUsers = new HashSet<>(existringProject.getCustomers());
-
-        updatedUsers.stream()
-                .filter(user -> !existingUsers.contains(user))
-                .forEach(existringProject::addCustomer);
-
-        existingUsers.stream()
-                .filter(user -> !updatedUsers.contains(user))
-                .forEach(existringProject::removeCustomer);
-
         User manager = this.userRepository.findUserByUsername(projectDTO.managerName()).orElseThrow();
 
         Collection<Task> tasks = existringProject.getTasks();
-        Map<String, Task> existingTasksMap = tasks.stream()
-                .collect(Collectors.toMap(Task::getName, task -> task));
-
         Collection<TaskDto> taskDtos = projectDTO.tasks();
+        Collection<Task> mergedTasks = this.taskService
+                .mergeTasks(taskDtos, tasks, existringProject)
+                .toList();
 
-        taskDtos.stream()
-                .filter(dto -> !existingTasksMap.containsKey(dto.taskName()))
-                .forEach(taskDto -> {
-                    Task newTask = new Task(
-                            existringProject,
-                            taskDto.taskName(),
-                            taskDto.description(),
-                            TaskStatus.valueOf(taskDto.status()),
-                            taskDto.priority());
-                    existringProject.addTask(newTask);
-                });
-
-        tasks.stream()
-                .filter(task -> taskDtos.stream()
-                        .noneMatch(dto -> dto.taskName().equals(task.getName())))
-                .forEach(existringProject::removeTask);
-
+        Collection<User> users = existringProject.getCustomers();
+        Collection<UserDTO> userDtos = projectDTO.users();
+        Collection<User> mergedUsers = this.userService.mergeUsers(userDtos, users).toList();
 
         existringProject.setName(projectDTO.projectName());
         existringProject.setDescription(projectDTO.description());
         existringProject.setManager(manager);
+        existringProject.setTasks(mergedTasks);
+        existringProject.setCustomers(mergedUsers);
+
         this.projectRepository.save(existringProject);
     }
 
@@ -131,5 +100,11 @@ public class ProjectService {
                 .map(User -> Mapper.map(User, UserDTO.class))
                 .toList()
                 .stream();
+    }
+
+    public void createProject(String managerName, String projectName, String description) {
+        User manager = this.userRepository.findUserByUsername(managerName).orElseThrow();
+        Project project = new Project(projectName, description, manager);
+        this.projectRepository.save(project);
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.crm.domain.repository")
+@EnableJpaRepositories(basePackages = "com.crm.infrastructure.dataaccess.repository")
 public class JpaConfig {
     @Bean
     public DataSource dataSource() {
@@ -29,12 +29,13 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("com.crm.dataaccess.entity");
+        em.setPackagesToScan("com.crm.domain.entity");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         em.setEntityManagerFactoryInterface(EntityManagerFactory.class);
         em.getJpaPropertyMap().put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         em.getJpaPropertyMap().put("hibernate.hbm2ddl.auto", "update");
         em.getJpaPropertyMap().put("hibernate.show_sql", "true");
+        em.getJpaPropertyMap().put("hibernate.globally_quoted_identifiers", "true");
         return em;
     }
 
