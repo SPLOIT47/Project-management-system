@@ -176,7 +176,7 @@ public class ProjectLayout {
 
         Label usersLabel = new Label("Users:");
         ListView<UserDTO> usersListView = new ListView<>();
-        usersListView.getItems().setAll(projectDTO.users());
+        usersListView.getItems().setAll(projectDTO.users().keySet());
 
         Button addUserButton = new Button("Add User");
         Button removeUserButton = new Button("Remove User");
@@ -207,7 +207,7 @@ public class ProjectLayout {
                             projectName,
                             projectDTO.managerName(),
                             projectDescription,
-                            usersListView.getItems().stream().toList(),
+                            projectDTO.users(),
                             projectDTO.tasks());
                    actionHandler.handleEditProject(project);
                 }
@@ -223,7 +223,7 @@ public class ProjectLayout {
         addUserButton.setOnAction(event -> {
             ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
             if (actionHandler != null) {
-                // actionHandler.showAddUserDialog(projectDTO, usersListView);
+                actionHandler.showAddUserDialog(projectDTO);
             }
         });
 
@@ -240,7 +240,7 @@ public class ProjectLayout {
         return dialog;
     }
 
-    public void showAddUserDialog(ProjectDTO projectDTO, ListView<UserDTO> usersListView) {
+    public void showAddUserDialog(ProjectDTO projectDTO) {
         Stage addUserDialog = new Stage();
         addUserDialog.initModality(Modality.APPLICATION_MODAL);
         addUserDialog.setTitle("Add User to Project");
@@ -250,24 +250,21 @@ public class ProjectLayout {
 
         Label label = new Label("Select a User to Add:");
 
-        ListView<UserDTO> availableUsersListView = new ListView<>();
-        availableUsersListView.getItems().addAll(this.getProjectUsers(projectDTO.projectName()));
+        TextField textField = new TextField();
 
         Button addButton = new Button("Add User");
         addButton.setOnAction(event -> {
-            UserDTO selectedUser = availableUsersListView.getSelectionModel().getSelectedItem();
-            if (selectedUser != null && !usersListView.getItems().contains(selectedUser)) {
-                usersListView.getItems().add(selectedUser);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Select a valid user or the user is already added.");
-                alert.show();
+            String username = textField.getText();
+            ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
+            if (actionHandler != null) {
+               // actionHandler
             }
         });
 
         Button cancelButton = new Button("Cancel");
         cancelButton.setOnAction(event -> addUserDialog.close());
 
-        dialogLayout.getChildren().addAll(label, availableUsersListView, addButton, cancelButton);
+        dialogLayout.getChildren().addAll(label, textField, addButton, cancelButton);
 
         Scene dialogScene = new Scene(dialogLayout, 300, 250);
         addUserDialog.setScene(dialogScene);

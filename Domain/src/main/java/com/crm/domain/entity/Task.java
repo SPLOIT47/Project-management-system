@@ -23,7 +23,6 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Task {
@@ -44,7 +43,6 @@ public class Task {
     private int priority;
 
     @ManyToMany
-    @Builder.Default
     private Collection<User> assignedUsers = new ArrayList<>();
 
     public Task(Project project, String name, String description, int priority) {

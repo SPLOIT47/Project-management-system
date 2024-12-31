@@ -9,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface JpaProjectRepository extends CrudRepository<Project, UUID>, ProjectRepository {
@@ -18,6 +19,14 @@ public interface JpaProjectRepository extends CrudRepository<Project, UUID>, Pro
             "FROM  Project p " +
             "WHERE p.manager.username = :username")
     List<String> getProjectNamesByManagerUsername(@Param("username") String username);
+
+    @Override
+    @Query("SELECT  p " +
+            "from Project p " +
+            "where p.name = :projectName and p.manager = :manager")
+    Optional<Project> getProjectByManagerAndProjectName(
+            @Param("manager") User manager,
+            @Param("projectName") String projectName);
 
     @Override
     @Query("SELECT DISTINCT p " +

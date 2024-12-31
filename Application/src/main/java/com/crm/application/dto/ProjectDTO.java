@@ -1,13 +1,16 @@
 package com.crm.application.dto;
 
+import com.crm.domain.enums.UserRole;
+
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 public record ProjectDTO(
         UUID id,
         String projectName,
-        String managerName,
         String description,
-        Collection<UserDTO> users,
+        String managerName,
+        Map<UserDTO, UserRole> users,
         Collection<TaskDto> tasks) {
 }

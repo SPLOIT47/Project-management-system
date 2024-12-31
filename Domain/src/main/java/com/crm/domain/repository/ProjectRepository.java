@@ -3,9 +3,6 @@ package com.crm.domain.repository;
 import com.crm.domain.entity.Project;
 import com.crm.domain.entity.Task;
 import com.crm.domain.entity.User;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +16,9 @@ public interface ProjectRepository {
 
     void delete(Project project);
 
-    Optional<Project> getProjectsById(UUID id);
+    Optional<Project> getProjectById(UUID id);
+
+    Optional<Project> getProjectByManagerAndProjectName(User manager, String projectName);
 
     List<String> getProjectNamesByManagerUsername(String username);
 

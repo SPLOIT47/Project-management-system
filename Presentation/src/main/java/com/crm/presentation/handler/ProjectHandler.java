@@ -61,6 +61,10 @@ public class ProjectHandler {
     }
 
     public void getAddUserScene(ProjectDTO projectDTO) {
-        this.projectLayout.showAddUserDialog(projectDTO, new ListView<>());
+        this.projectLayout.showAddUserDialog(projectDTO);
+    }
+
+    public void addUserToProject(String projectName, String username) {
+        this.projectController.addUserToProject(projectName, username);
     }
 }

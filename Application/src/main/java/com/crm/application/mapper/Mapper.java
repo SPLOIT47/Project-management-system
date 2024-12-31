@@ -1,8 +1,5 @@
 package com.crm.application.mapper;
 
-import jakarta.persistence.criteria.From;
-
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,18 +26,6 @@ public class Mapper {
             throw new IllegalArgumentException("No mapping registered for class: " + toClazz.getName());
         }
 
-        return mapper.apply(from);
-    }
-
-    public static <To> To map(Object from) {
-        Class<?> fromClazz = from.getClass();
-        Map<Type, Function<?, ?>> availableMappings = mappers.get(fromClazz);
-        if (availableMappings == null) {
-            throw new IllegalArgumentException("No mappings registered for class: " + fromClazz.getName());
-        }
-
-        @SuppressWarnings("unchecked")
-        Function<Object, To> mapper = (Function<Object, To>) availableMappings.values().iterator().next();
         return mapper.apply(from);
     }
 }

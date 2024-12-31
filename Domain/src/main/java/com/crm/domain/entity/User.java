@@ -1,6 +1,8 @@
 package com.crm.domain.entity;
 
 
+import com.crm.domain.entity.mapping.UserRoleMapping;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 @Getter
@@ -34,6 +37,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Collection<UserRoleMapping> projectRoles;
+
     @ManyToMany
     private Collection<Task> tasks;
 
@@ -46,6 +52,7 @@ public class User {
         this.password = password;
         this.tasks = new ArrayList<>();
         this.notifications = new ArrayList<>();
+        this.projectRoles = new HashSet<>();
     }
 
     public User(UUID id, String username, String password) {
@@ -54,6 +61,7 @@ public class User {
         this.password = password;
         this.tasks = new ArrayList<>();
         this.notifications = new ArrayList<>();
+        this.projectRoles = new ArrayList<>();
     }
 
     public void addTask(Task task) {

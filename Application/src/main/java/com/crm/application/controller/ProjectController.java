@@ -5,10 +5,13 @@ import com.crm.application.dto.UserDTO;
 import com.crm.application.service.ProjectService;
 import com.crm.application.session.SessionManager;
 import com.crm.domain.entity.Project;
+import com.crm.domain.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Controller
@@ -40,5 +43,21 @@ public class ProjectController {
     public Stream<UserDTO> getUsersByProjectName(String projectName) {
         String manager = this.sessionManager.getCurrentUser().getUsername();
         return this.projectService.getUsersByUsername(projectName, manager);
+    }
+
+    public void addUserToProject(String projectName, String username) {
+        Stream<UserDTO> users = this.getUsersByProjectName(projectName);
+        List<UserDTO> userWithSameName = users
+                .filter(dto -> dto
+                        .username()
+                        .equals(username))
+                .toList();
+
+        if (!userWithSameName.isEmpty()) {
+            return;
+        }
+
+        User manager = this.sessionManager.getCurrentUser();
+        this.projectService.addUserToProject(manager, projectName, username);
     }
 }

@@ -1,4 +1,10 @@
 dependencies {
     implementation project(':Domain')
     implementation 'org.springframework.data:spring-data-jpa:3.3.5'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.springframework:spring-test:5.3.30'
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

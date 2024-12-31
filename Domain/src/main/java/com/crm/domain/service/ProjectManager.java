@@ -3,12 +3,14 @@ package com.crm.domain.service;
 import com.crm.domain.entity.Project;
 import com.crm.domain.entity.Task;
 import com.crm.domain.entity.User;
+import com.crm.domain.entity.mapping.UserRoleMapping;
 import com.crm.domain.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -52,11 +54,11 @@ public class ProjectManager {
         return Optional.empty();
     }
 
-    public Optional<Project> updateProjectUsers(UUID id, Collection<User> users) {
+    public Optional<Project> updateProjectUsers(UUID id, Collection<UserRoleMapping> users) {
         Optional<Project> project = this.projectRepository.findById(id);
 
         project.ifPresent(value -> {
-            value.setCustomers(users);
+            value.setProjectRoles((Set<UserRoleMapping>) users);
             this.projectRepository.save(value);
         });
 

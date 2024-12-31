@@ -8,6 +8,8 @@ import com.crm.domain.entity.Notification;
 import com.crm.domain.entity.Project;
 import com.crm.domain.entity.Task;
 import com.crm.domain.entity.User;
+import com.crm.domain.entity.mapping.UserRoleMapping;
+import com.crm.domain.enums.UserRole;
 import com.crm.domain.repository.ProjectRepository;
 import com.crm.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -51,28 +56,21 @@ public class ProjectService {
     public Stream<ProjectDTO> getProjectDTOByProjectName(String username) {
         List<Project> projects = this.projectRepository.getProjectNamesRolesByUsername(username);
 
-        return projects.stream()
-                .map(project -> {
-                    List<User> users = this.projectRepository.getUsersByProjectId(project.getId());
-                    List<Task> tasks = this.projectRepository.getTasksByProjectId(project.getId());
-                    String role = project.getManager().getUsername().equals(username) ? "manager" : "user";
-
-                    return new ProjectDTO(
-                            project.getId(),
-                            project.getName(),
-                            project.getManager().getUsername(),
-                            project.getDescription(),
-                            users.stream().map(obj -> Mapper.map(obj, UserDTO.class)).toList(),
-                            tasks.stream().map(obj -> Mapper.map(obj, TaskDto.class)).toList()
-                    );
-                });
+        return projects.stream().map(project -> Mapper.map(project, ProjectDTO.class));
     }
 
     @Transactional
     public void updateProject(ProjectDTO projectDTO) {
-        Project existringProject = this.projectRepository.getProjectsById(projectDTO.id()).orElseThrow();
+        Project existringProject = this.projectRepository.getProjectById(projectDTO.id()).orElseThrow();
 
-        User manager = this.userRepository.findUserByUsername(projectDTO.managerName()).orElseThrow();
+        User manager = this.userRepository.findUserByUsername(projectDTO
+                        .users()
+                        .values()
+                        .stream()
+                        .filter(role -> role == UserRole.Manager)
+                        .findFirst()
+                        .toString())
+                .orElseThrow();
 
         Collection<Task> tasks = existringProject.getTasks();
         Collection<TaskDto> taskDtos = projectDTO.tasks();
@@ -80,16 +78,15 @@ public class ProjectService {
                 .mergeTasks(taskDtos, tasks, existringProject)
                 .toList();
 
-        Collection<User> users = existringProject.getCustomers();
-        Collection<UserDTO> userDtos = projectDTO.users();
-        Collection<User> mergedUsers = this.userService.mergeUsers(userDtos, users).toList();
+
+        // FIXME: need to merge a map of users with roles, not only by id, coz now we lost role of each user in project
+
+        Collection<UserRoleMapping> mergedUsers = this.userService.mergeUserRoles(projectDTO.users(), existringProject.getProjectRoles()).toList();
 
         existringProject.setName(projectDTO.projectName());
         existringProject.setDescription(projectDTO.description());
-        existringProject.setManager(manager);
         existringProject.setTasks(mergedTasks);
-        existringProject.setCustomers(mergedUsers);
-
+        existringProject.setProjectRoles((Set<UserRoleMapping>) mergedUsers);
         this.projectRepository.save(existringProject);
     }
 
@@ -106,5 +103,18 @@ public class ProjectService {
         User manager = this.userRepository.findUserByUsername(managerName).orElseThrow();
         Project project = new Project(projectName, description, manager);
         this.projectRepository.save(project);
+    }
+
+    public void addUserToProject(User manager, String projectName, String username) {
+        Optional<Project> existingProject = this.projectRepository
+                .getProjectByManagerAndProjectName(manager, projectName);
+
+        Optional<User> userToAdd = this.userRepository.findUserByUsername(username);
+
+        if (existingProject.isEmpty() || userToAdd.isEmpty()) {
+            return;
+        }
+
+        existingProject.get().addUser(userToAdd.get(), UserRole.Employee);
     }
 }

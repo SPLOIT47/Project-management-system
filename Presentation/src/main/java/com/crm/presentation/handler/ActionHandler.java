@@ -75,4 +75,8 @@ public class ActionHandler {
     public void showAddUserDialog(ProjectDTO projectDTO) {
         this.projectHandler.getAddUserScene(projectDTO);
     }
+
+    public void handleAddUser(String projectName, String username) {
+        this.projectHandler.addUserToProject(projectName, username);
+    }
 }
