@@ -1,3 +1,11 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.0'
+    id 'java'
+}
+
+
 allprojects {
     group = 'com.crm'
     version = '1.0.0'
@@ -27,4 +35,23 @@ subprojects {
         annotationProcessor 'org.projectlombok:lombok:1.18.34'
         implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
     }
+}
+
+tasks.register('buildFatJar', ShadowJar) {
+    archiveBaseName.set('project-management-system')
+    archiveVersion.set('1.0.0')
+    destinationDirectory.set(layout.buildDirectory.dir("libs").get().asFile)
+
+    doFirst {
+        destinationDirectory.get().asFile.mkdirs()
+    }
+
+    subprojects.each {
+        if (it.plugins.hasPlugin('java')) {
+            from (it.layout.buildDirectory.dir("classes").get().asFile)
+        }
+    }
+
+    configurations = subprojects.findAll {it.plugins.hasPlugin('java')}
+                                .collect {it.configurations.runtimeClasspath}
 }

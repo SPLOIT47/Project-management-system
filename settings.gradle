@@ -1,4 +1,4 @@
-rootProject.name = 'CRM-system'
+rootProject.name = 'project-management-system'
 include 'Presentation'
 include 'Application'
 include 'Domain'
