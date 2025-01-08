@@ -1,9 +1,6 @@
 plugins {
-    id 'application'
     id 'org.openjfx.javafxplugin' version '0.1.0'
 }
-
-mainClassName = 'com.crm.presentation.View'
 
 dependencies {
     implementation project(':Application')

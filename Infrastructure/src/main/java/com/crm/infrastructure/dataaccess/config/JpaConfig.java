@@ -1,5 +1,6 @@
 package com.crm.infrastructure.dataaccess.config;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -15,13 +16,15 @@ import javax.sql.DataSource;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.crm.infrastructure.dataaccess.repository")
 public class JpaConfig {
+    private final Dotenv dotenv = Dotenv.configure().directory(System.getProperty("user.dir")).load();
+
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:55000/crm");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("12345");
+        dataSource.setUrl(dotenv.get("DATABASE_URL"));
+        dataSource.setUsername(dotenv.get("DATABASE_USER"));
+        dataSource.setPassword(dotenv.get("DATABASE_PASSWORD"));
         return dataSource;
     }
 

@@ -32,11 +32,11 @@ public interface JpaProjectRepository extends CrudRepository<Project, UUID>, Pro
     @Query("SELECT DISTINCT p " +
             "FROM Project p " +
             "WHERE p.manager.username = :username " +
-            "OR :username = ANY (SELECT u.username FROM p.customers u)")
+            "OR :username = ANY (SELECT urm.user.username FROM p.projectRoles urm)")
     List<Project> getProjectNamesRolesByUsername(@Param("username") String username);
 
     @Override
-    @Query("SELECT p.customers " +
+    @Query("SELECT p.projectRoles " +
             "FROM Project p " +
             "WHERE p.name = :projectName AND p.manager.username = :managerName")
     List<User> getProjectUsersByProjectNameAndManagerName(
@@ -44,7 +44,7 @@ public interface JpaProjectRepository extends CrudRepository<Project, UUID>, Pro
             @Param("managerName") String managerName);
 
     @Override
-    @Query("SELECT p.customers FROM Project p WHERE p.id = :projectId")
+    @Query("SELECT urm.user FROM Project p JOIN p.projectRoles urm WHERE p.id = :projectId")
     List<User> getUsersByProjectId(@Param("projectId") UUID projectId);
 
     @Override

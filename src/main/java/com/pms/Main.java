@@ -1,4 +1,4 @@
-package com.crm.presentation;
+package com.pms;
 
 import com.crm.application.config.ApplicationConfig;
 import com.crm.domain.config.DomainConfig;
@@ -12,19 +12,28 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 
 @ComponentScan(basePackages = "com.crm.presentation.handler")
-public class View extends Application {
+public class Main extends Application {
+
+    public static void main(String[] args) {
+        launch(args); // Запуск JavaFX приложения
+    }
+
     @Override
     public void start(Stage primaryStage) {
+        // Создаём Spring контекст
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.register(JpaConfig.class,  ApplicationConfig.class, PresentationConfig.class, DomainConfig.class);
+        context.register(JpaConfig.class, ApplicationConfig.class, PresentationConfig.class, DomainConfig.class);
         context.refresh();
 
+        // Настройка PresentationConfig
         PresentationConfig presentationConfig = context.getBean(PresentationConfig.class);
         presentationConfig.setPrimaryStage(primaryStage);
 
+        // Инициализация ActionHandler
         ActionHandler actionHandler = context.getBean(ActionHandler.class);
         actionHandler.setStage(primaryStage);
 
+        // Установка сцены и запуск приложения
         LoginLayout loginLayout = context.getBean(LoginLayout.class);
         primaryStage.setScene(loginLayout.createScene());
         primaryStage.show();

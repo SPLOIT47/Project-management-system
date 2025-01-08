@@ -3,8 +3,11 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.0'
     id 'java'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'application'
 }
 
+mainClassName = 'com.pms.Main'
 
 allprojects {
     group = 'com.crm'
@@ -35,6 +38,20 @@ subprojects {
         annotationProcessor 'org.projectlombok:lombok:1.18.34'
         implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
     }
+}
+
+dependencies {
+    implementation project(':Application')
+    implementation project(':Domain')
+    implementation project(':Infrastructure')
+    implementation project(':Presentation')
+    implementation 'org.springframework:spring-core:6.1.14'
+    implementation 'org.springframework:spring-context:6.1.14'
+}
+
+javafx {
+    version = "23.0.1"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 tasks.register('buildFatJar', ShadowJar) {
