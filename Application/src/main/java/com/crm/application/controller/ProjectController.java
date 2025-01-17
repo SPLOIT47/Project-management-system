@@ -16,7 +16,6 @@ public class ProjectController {
     private final ProjectService projectService;
     private final SessionManager sessionManager;
 
-
     @Autowired
     public ProjectController(
             ProjectService projectService,
@@ -42,19 +41,23 @@ public class ProjectController {
         return this.projectService.getUsersByUsername(projectName, manager);
     }
 
-    public void addUserToProject(String projectName, String username) {
+    public boolean addUserToProject(String projectName, String username) {
         Stream<UserDTO> users = this.getUsersByProjectName(projectName);
         List<UserDTO> userWithSameName = users
                 .filter(dto -> dto
-                        .username()
+                        .getUsername()
                         .equals(username))
                 .toList();
 
         if (!userWithSameName.isEmpty()) {
-            return;
+            return false;
         }
 
         User manager = this.sessionManager.getCurrentUser();
-        this.projectService.addUserToProject(manager, projectName, username);
+        return this.projectService.addUserToProject(manager, projectName, username);
+    }
+
+    public boolean removeUserFromProject(ProjectDTO projectDto, UserDTO userToDeleteDto) {
+        return this.projectService.removeUserProject(projectDto.getProjectName(), this.sessionManager.getCurrentUser(), userToDeleteDto.getUsername());
     }
 }

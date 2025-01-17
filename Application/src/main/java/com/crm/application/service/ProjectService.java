@@ -60,10 +60,10 @@ public class ProjectService {
 
     @Transactional
     public void updateProject(ProjectDTO projectDTO) {
-        Project existringProject = this.projectRepository.getProjectById(projectDTO.id()).orElseThrow();
+        Project existringProject = this.projectRepository.getProjectById(projectDTO.getId()).orElseThrow();
 
-        existringProject.setName(projectDTO.projectName());
-        existringProject.setDescription(projectDTO.description());
+        existringProject.setName(projectDTO.getProjectName());
+        existringProject.setDescription(projectDTO.getDescription());
 
         this.projectRepository.save(existringProject);
     }
@@ -85,17 +85,33 @@ public class ProjectService {
     }
 
     @Transactional
-    public void addUserToProject(User manager, String projectName, String username) {
+    public boolean addUserToProject(User manager, String projectName, String username) {
         Optional<Project> existingProject = this.projectRepository
                 .getProjectByManagerAndProjectName(manager, projectName);
 
         Optional<User> userToAdd = this.userRepository.findUserByUsername(username);
 
         if (existingProject.isEmpty() || userToAdd.isEmpty()) {
-            return;
+            return false;
         }
 
         existingProject.get().addUser(userToAdd.get(), UserRole.Employee);
         this.projectRepository.save(existingProject.get());
+        return true;
+    }
+
+    public boolean removeUserProject(String projectName, User manager, String username) {
+        Optional<Project> existingProject = this.projectRepository
+                .getProjectByManagerAndProjectName(manager, projectName);
+
+        Optional<User> userToDelete = this.userRepository.findUserByUsername(username);
+
+        if (existingProject.isEmpty() || userToDelete.isEmpty()) {
+            return false;
+        }
+
+        existingProject.get().removeUser(userToDelete.get());
+        this.projectRepository.save(existingProject.get());
+        return true;
     }
 }

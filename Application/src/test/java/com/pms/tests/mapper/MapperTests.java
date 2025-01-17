@@ -30,9 +30,9 @@ public class MapperTests {
         UUID id = user.getId();
 
         UserDTO userDTO = Mapper.map(user, UserDTO.class);
-        assertEquals(userDTO.id(), id);
-        assertEquals(userDTO.password(), user.getPassword());
-        assertEquals(userDTO.username(), user.getUsername());
+        assertEquals(userDTO.getId(), id);
+        assertEquals(userDTO.getPassword(), user.getPassword());
+        assertEquals(userDTO.getUsername(), user.getUsername());
     }
 
     @Test
@@ -66,11 +66,11 @@ public class MapperTests {
 
         ProjectDTO projectDTO = Mapper.map(project, ProjectDTO.class);
 
-        assertEquals(projectDTO.projectName(), project.getName());
-        assertEquals(projectDTO.description(), project.getDescription());
-        assertEquals(projectDTO.managerName(), project.getManager().getUsername());
+        assertEquals(projectDTO.getProjectName(), project.getName());
+        assertEquals(projectDTO.getDescription(), project.getDescription());
+        assertEquals(projectDTO.getManagerName(), project.getManager().getUsername());
 
-        for (var obj : projectDTO.users().entrySet()) {
+        for (var obj : projectDTO.getUsers().entrySet()) {
             Optional<UserRoleMapping> user = project.getProjectRoles().stream().filter(mapping
                             -> mapping
                             .getUser()

@@ -62,8 +62,8 @@ public class ProjectLayout {
                     this.setText(null);
                     this.setGraphic(null);
                 } else {
-                    Label nameLabel = new Label(project.projectName());
-                    Label roleLabel = new Label(project.managerName()
+                    Label nameLabel = new Label(project.getProjectName());
+                    Label roleLabel = new Label(project.getManagerName()
                             .equals(ProjectLayout.this.sessionManager.getCurrentUserName())
                             ? "manager" : "user");
 
@@ -171,13 +171,13 @@ public class ProjectLayout {
         dialogLayout.setHgap(10);
 
         Label nameLabel = new Label("Project Name:");
-        TextField nameField = new TextField(projectDTO.projectName());
+        TextField nameField = new TextField(projectDTO.getProjectName());
         Label descriptionLabel = new Label("Description:");
-        TextArea descriptionArea = new TextArea(projectDTO.description());
+        TextArea descriptionArea = new TextArea(projectDTO.getDescription());
 
         Label usersLabel = new Label("Users:");
         ListView<String> usersListView = new ListView<>();
-        usersListView.getItems().setAll(projectDTO.users().keySet());
+        usersListView.getItems().setAll(projectDTO.getUsers().keySet());
 
         Button addUserButton = new Button("Add User");
         Button removeUserButton = new Button("Remove User");
@@ -204,10 +204,10 @@ public class ProjectLayout {
                 ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
                 if (actionHandler != null) {
                    actionHandler.handleEditProject( new ProjectDTO(
-                           projectDTO.id(),
+                           projectDTO.getId(),
                            projectName,
                            projectDescription,
-                           projectDTO.managerName(),
+                           projectDTO.getManagerName(),
                            null,
                            null));
                 }
@@ -223,15 +223,17 @@ public class ProjectLayout {
         addUserButton.setOnAction(event -> {
             ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
             if (actionHandler != null) {
-                actionHandler.showAddUserDialog(projectDTO);
+                actionHandler.showAddUserDialog(projectDTO, usersListView);
             }
         });
 
         removeUserButton.setOnAction(event -> {
             String selectedUser = usersListView.getSelectionModel().getSelectedItem();
-            if (selectedUser != null) {
-                usersListView.getItems().remove(selectedUser);
-                //TODO: actonHandler.removeUserFromProject();
+            ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
+            if (actionHandler != null && selectedUser != null) {
+                if (actionHandler.removeUserFromProject(projectDTO.getProjectName(), selectedUser)) {
+                    usersListView.getItems().remove(selectedUser);
+                }
             }
         });
 
@@ -240,7 +242,7 @@ public class ProjectLayout {
         return dialog;
     }
 
-    public void showAddUserDialog(ProjectDTO projectDTO) {
+    public void showAddUserDialog(ProjectDTO projectDTO, ListView<String> usersListView) {
         Stage addUserDialog = new Stage();
         addUserDialog.initModality(Modality.APPLICATION_MODAL);
         addUserDialog.setTitle("Add User to Project");
@@ -249,25 +251,27 @@ public class ProjectLayout {
         dialogLayout.setPadding(new Insets(20));
 
         Label label = new Label("Select a User to Add:");
+        Label errorMessage = new Label();
+        errorMessage.setStyle("-fx-text-fill: red;");
 
         TextField textField = new TextField();
-        ListView<String> usersListView = new ListView<>();
-        usersListView.setVisible(false);
+        ListView<String> suggestionsListView = new ListView<>();
+        suggestionsListView.setVisible(false);
 
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
 
             if (!newValue.isEmpty() && actionHandler != null) {
-                usersListView.setVisible(true);
-                usersListView.setItems(FXCollections.observableList(actionHandler.getUsersSuggestions(newValue).toList()));
+                suggestionsListView.setVisible(true);
+                suggestionsListView.setItems(FXCollections.observableList(actionHandler.getUsersSuggestions(newValue).toList()));
             }
         });
 
-        usersListView.setOnMouseClicked(event -> {
-            String selectedUser = usersListView.getSelectionModel().getSelectedItem();
+        suggestionsListView.setOnMouseClicked(event -> {
+            String selectedUser = suggestionsListView.getSelectionModel().getSelectedItem();
             if (selectedUser != null) {
                 textField.setText(selectedUser);
-                usersListView.setVisible(false);
+                suggestionsListView.setVisible(false);
             }
         });
 
@@ -276,20 +280,25 @@ public class ProjectLayout {
             String username = textField.getText();
             ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
             if (actionHandler != null) {
-               actionHandler.addUserToProject(projectDTO.projectName(), username);
-               addUserDialog.close();
+                if (actionHandler.addUserToProject(projectDTO.getProjectName(), username)) {
+                    usersListView.getItems().add(username);
+                    addUserDialog.close();
+                } else {
+                    errorMessage.setText("Wrong username");
+                }
             }
         });
 
         Button cancelButton = new Button("Cancel");
         cancelButton.setOnAction(event -> addUserDialog.close());
 
-        dialogLayout.getChildren().addAll(label, textField, addButton, cancelButton);
+        dialogLayout.getChildren().addAll(label, textField, suggestionsListView, errorMessage, addButton, cancelButton);
 
         Scene dialogScene = new Scene(dialogLayout, 300, 250);
         addUserDialog.setScene(dialogScene);
         addUserDialog.show();
     }
+
 
 
     private List<ProjectDTO> getProjectDTO() {

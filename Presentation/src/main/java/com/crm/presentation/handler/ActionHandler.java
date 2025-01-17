@@ -2,6 +2,7 @@ package com.crm.presentation.handler;
 
 import com.crm.application.dto.ProjectDTO;
 import com.crm.application.dto.UserDTO;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,8 +74,8 @@ public class ActionHandler {
         return this.projectHandler.getProjectUsers(projectName);
     }
 
-    public void showAddUserDialog(ProjectDTO projectDTO) {
-        this.projectHandler.getAddUserScene(projectDTO);
+    public void showAddUserDialog(ProjectDTO projectDTO, ListView<String> usersListView) {
+        this.projectHandler.getAddUserScene(projectDTO, usersListView);
     }
 
     public void handleAddUser(String projectName, String username) {
@@ -85,7 +86,11 @@ public class ActionHandler {
         return this.projectHandler.getUsersSuggestions(username);
     }
 
-    public void addUserToProject(String projectName, String username) {
-        this.projectHandler.addUserToProject(projectName, username);
+    public boolean addUserToProject(String projectName, String username) {
+        return this.projectHandler.addUserToProject(projectName, username);
+    }
+
+    public boolean removeUserFromProject(String projectName, String username) {
+        return this.projectHandler.removeUserFromProject(projectName, username);
     }
 }

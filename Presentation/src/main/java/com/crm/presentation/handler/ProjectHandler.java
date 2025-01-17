@@ -7,6 +7,7 @@ import com.crm.application.dto.UserDTO;
 import com.crm.application.session.SessionManager;
 import com.crm.presentation.layout.ProjectLayout;
 import javafx.scene.Scene;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -66,15 +67,27 @@ public class ProjectHandler {
         return this.projectController.getUsersByProjectName(projectName);
     }
 
-    public void getAddUserScene(ProjectDTO projectDTO) {
-        this.projectLayout.showAddUserDialog(projectDTO);
+    public void getAddUserScene(ProjectDTO projectDTO, ListView<String> usersListView) {
+        this.projectLayout.showAddUserDialog(projectDTO, usersListView);
     }
 
-    public void addUserToProject(String projectName, String username) {
-        this.projectController.addUserToProject(projectName, username);
+    public boolean addUserToProject(String projectName, String username) {
+        return this.projectController.addUserToProject(projectName, username);
     }
 
     public Stream<String> getUsersSuggestions(String text) {
         return this.userController.getUsersSuggestions(text, Collections.singletonList(this.sessionManager.getCurrentUserName()), 10);
+    }
+
+    public boolean removeUserFromProject(String projectName, String username) {
+        ProjectDTO projectDto = ProjectDTO.builder()
+                .projectName(projectName)
+                .managerName(this.sessionManager.getCurrentUserName())
+                .build();
+        UserDTO userToRemoveDto = UserDTO.builder()
+                .username(username)
+                .build();
+
+        return this.projectController.removeUserFromProject(projectDto, userToRemoveDto);
     }
 }

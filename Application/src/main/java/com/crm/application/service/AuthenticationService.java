@@ -24,18 +24,18 @@ public class AuthenticationService {
     }
 
     public User registerUser(UserDTO userDTO) {
-        return this.userManager.createUser(userDTO.username(), userDTO.password());
+        return this.userManager.createUser(userDTO.getUsername(), userDTO.getPassword());
     }
 
     public Optional<User> AuthenticateUser(UserDTO user) {
-        Optional<User> existingOptionalUser = this.userRepository.findUserByUsername(user.username());
+        Optional<User> existingOptionalUser = this.userRepository.findUserByUsername(user.getUsername());
         if (existingOptionalUser.isEmpty()) {
             return Optional.empty();
         }
 
         User existingAppUser = existingOptionalUser.get();
 
-        if (!PasswordEncoder.Equals(user.password(), existingAppUser.getPassword())) {
+        if (!PasswordEncoder.Equals(user.getPassword(), existingAppUser.getPassword())) {
             return Optional.empty();
         }
 

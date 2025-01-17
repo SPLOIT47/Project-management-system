@@ -25,12 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -79,15 +74,18 @@ public class Project {
     }
 
     public void removeUser(User user) {
-        this.projectRoles.stream()
-                .filter(role -> role.getUser().equals(user))
-                .findFirst()
-                .ifPresent(role -> {
-                    if (role.getRole() != UserRole.Manager) {
-                        this.projectRoles.remove(role);
-                    } else {
-                        throw new RuntimeException("Manager cannot be removed");
-                    }
-                });
+        Iterator<UserRoleMapping> iterator = this.projectRoles.iterator();
+        while (iterator.hasNext()) {
+            UserRoleMapping role = iterator.next();
+            if (role.getUser().equals(user)) {
+                if (role.getRole() != UserRole.Manager) {
+                    iterator.remove();
+                } else {
+                    throw new RuntimeException("Manager cannot be removed");
+                }
+                break;
+            }
+        }
     }
+
 }
