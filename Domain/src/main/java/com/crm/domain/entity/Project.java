@@ -53,7 +53,7 @@ public class Project {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<Task> tasks;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserRoleMapping> projectRoles;
 
     public Project(String name, String description, User manager) {
@@ -63,6 +63,7 @@ public class Project {
         this.description = description;
         this.tasks = new ArrayList<>();
         this.projectRoles = new HashSet<>();
+        this.projectRoles.add(new UserRoleMapping(manager, this, UserRole.Manager));
     }
 
     public void addTask(Task task) {

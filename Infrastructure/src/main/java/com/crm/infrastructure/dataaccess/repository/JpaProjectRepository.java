@@ -3,6 +3,7 @@ package com.crm.infrastructure.dataaccess.repository;
 import com.crm.domain.entity.Project;
 import com.crm.domain.entity.Task;
 import com.crm.domain.entity.User;
+import com.crm.domain.entity.mapping.UserRoleMapping;
 import com.crm.domain.repository.ProjectRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -39,7 +40,7 @@ public interface JpaProjectRepository extends CrudRepository<Project, UUID>, Pro
     @Query("SELECT p.projectRoles " +
             "FROM Project p " +
             "WHERE p.name = :projectName AND p.manager.username = :managerName")
-    List<User> getProjectUsersByProjectNameAndManagerName(
+    List<UserRoleMapping> getProjectUsersByProjectNameAndManagerName(
             @Param("projectName") String projectName,
             @Param("managerName") String managerName);
 

@@ -4,6 +4,7 @@ import com.crm.application.dto.ProjectDTO;
 import com.crm.application.dto.UserDTO;
 import com.crm.application.session.SessionManager;
 import com.crm.presentation.handler.ActionHandler;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -175,7 +176,7 @@ public class ProjectLayout {
         TextArea descriptionArea = new TextArea(projectDTO.description());
 
         Label usersLabel = new Label("Users:");
-        ListView<UserDTO> usersListView = new ListView<>();
+        ListView<String> usersListView = new ListView<>();
         usersListView.getItems().setAll(projectDTO.users().keySet());
 
         Button addUserButton = new Button("Add User");
@@ -202,14 +203,13 @@ public class ProjectLayout {
             if (!projectName.isEmpty()) {
                 ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
                 if (actionHandler != null) {
-                    ProjectDTO project = new ProjectDTO(
-                            projectDTO.id(),
-                            projectName,
-                            projectDTO.managerName(),
-                            projectDescription,
-                            projectDTO.users(),
-                            projectDTO.tasks());
-                   actionHandler.handleEditProject(project);
+                   actionHandler.handleEditProject( new ProjectDTO(
+                           projectDTO.id(),
+                           projectName,
+                           projectDescription,
+                           projectDTO.managerName(),
+                           null,
+                           null));
                 }
                 dialog.close();
             } else {
@@ -228,10 +228,10 @@ public class ProjectLayout {
         });
 
         removeUserButton.setOnAction(event -> {
-            UserDTO selectedUser = usersListView.getSelectionModel().getSelectedItem();
+            String selectedUser = usersListView.getSelectionModel().getSelectedItem();
             if (selectedUser != null) {
                 usersListView.getItems().remove(selectedUser);
-                // actonHandler.removeUserFromProject();
+                //TODO: actonHandler.removeUserFromProject();
             }
         });
 
@@ -251,13 +251,33 @@ public class ProjectLayout {
         Label label = new Label("Select a User to Add:");
 
         TextField textField = new TextField();
+        ListView<String> usersListView = new ListView<>();
+        usersListView.setVisible(false);
+
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
+
+            if (!newValue.isEmpty() && actionHandler != null) {
+                usersListView.setVisible(true);
+                usersListView.setItems(FXCollections.observableList(actionHandler.getUsersSuggestions(newValue).toList()));
+            }
+        });
+
+        usersListView.setOnMouseClicked(event -> {
+            String selectedUser = usersListView.getSelectionModel().getSelectedItem();
+            if (selectedUser != null) {
+                textField.setText(selectedUser);
+                usersListView.setVisible(false);
+            }
+        });
 
         Button addButton = new Button("Add User");
         addButton.setOnAction(event -> {
             String username = textField.getText();
             ActionHandler actionHandler = this.actionControllerProvider.getIfAvailable();
             if (actionHandler != null) {
-               // actionHandler
+               actionHandler.addUserToProject(projectDTO.projectName(), username);
+               addUserDialog.close();
             }
         });
 

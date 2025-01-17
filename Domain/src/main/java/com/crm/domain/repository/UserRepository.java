@@ -1,6 +1,7 @@
 package com.crm.domain.repository;
 
 import com.crm.domain.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,11 +15,11 @@ public interface UserRepository  {
 
     Optional<User> findById(UUID id);
 
-    @Query("SELECT u from appuser u where u.username = :username")
     Optional<User> findUserByUsername(@Param("username") String username);
 
-    @Query("SELECT DISTINCT u " +
-            "from appuser u " +
-            "where u.username in (:users)")
     List<User> findAllByUsername(@Param("users") List<String> username);
+
+    List<User> findByPrefixExcludingUsernames(@Param("prefix") String prefix,
+                                              @Param("excludedUsernames") List<String> excludedUsernames,
+                                              Pageable pageable);
 }

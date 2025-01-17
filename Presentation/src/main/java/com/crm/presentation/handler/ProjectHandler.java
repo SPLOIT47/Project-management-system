@@ -1,14 +1,17 @@
 package com.crm.presentation.handler;
 
 import com.crm.application.controller.ProjectController;
+import com.crm.application.controller.UserController;
 import com.crm.application.dto.ProjectDTO;
 import com.crm.application.dto.UserDTO;
 import com.crm.application.session.SessionManager;
 import com.crm.presentation.layout.ProjectLayout;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProjectHandler {
     private final ProjectController projectController;
+    private final UserController userController;
     private final ProjectLayout projectLayout;
     private final SessionManager sessionManager;
 
@@ -24,10 +28,12 @@ public class ProjectHandler {
     public ProjectHandler(
             ProjectController projectController,
             ProjectLayout projectLayout,
-            SessionManager sessionManager) {
+            SessionManager sessionManager,
+            UserController userController) {
         this.projectController = projectController;
         this.projectLayout = projectLayout;
         this.sessionManager = sessionManager;
+        this.userController = userController;
     }
 
     public Scene getMainScene() {
@@ -35,7 +41,7 @@ public class ProjectHandler {
     }
 
     public Stream<ProjectDTO> getUserProjectNames(String username) {
-        return this.projectController.getProjectNamesByUsername(username);
+        return this.projectController.getProjectsByUsername(username);
     }
 
     public Stage getProjectCreatingStage() {
@@ -66,5 +72,9 @@ public class ProjectHandler {
 
     public void addUserToProject(String projectName, String username) {
         this.projectController.addUserToProject(projectName, username);
+    }
+
+    public Stream<String> getUsersSuggestions(String text) {
+        return this.userController.getUsersSuggestions(text, Collections.singletonList(this.sessionManager.getCurrentUserName()), 10);
     }
 }

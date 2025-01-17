@@ -20,29 +20,4 @@ public class TaskService {
         this.taskManager = taskManager;
     }
 
-    public Stream<Task> mergeTasks(Collection<TaskDto> newTasks, Collection<Task> oldTasks, Project project) {
-        Collection<Task> mergedTasks = new ArrayList<>();
-
-        newTasks.stream()
-                .filter(taskDto -> !oldTasks.stream()
-                        .map(Task::getName)
-                        .toList()
-                        .contains(taskDto.taskName()))
-                .forEach(taskDto -> {
-                    Task task = this.taskManager.createTask(
-                            taskDto.taskName(),
-                            taskDto.description(),
-                            project,
-                            taskDto.priority());
-                    mergedTasks.add(task);
-                });
-
-        oldTasks.stream().filter(task -> !newTasks.stream()
-                        .map(TaskDto::taskName)
-                        .toList()
-                        .contains(task.getName()))
-                .forEach(mergedTasks::remove);
-
-        return mergedTasks.stream();
-    }
 }

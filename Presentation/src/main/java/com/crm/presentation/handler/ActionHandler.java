@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @Lazy
@@ -77,6 +78,14 @@ public class ActionHandler {
     }
 
     public void handleAddUser(String projectName, String username) {
+        this.projectHandler.addUserToProject(projectName, username);
+    }
+
+    public Stream<String> getUsersSuggestions(String username) {
+        return this.projectHandler.getUsersSuggestions(username);
+    }
+
+    public void addUserToProject(String projectName, String username) {
         this.projectHandler.addUserToProject(projectName, username);
     }
 }

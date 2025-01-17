@@ -2,6 +2,7 @@ package com.crm.presentation.config;
 
 import javafx.stage.Stage;
 import lombok.Setter;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

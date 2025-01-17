@@ -42,7 +42,7 @@ public class MapperConfig {
                 project.getManager().getUsername(),
                 project.getProjectRoles().stream()
                         .collect(Collectors.toMap(
-                                user -> Mapper.map(user.getUser(), UserDTO.class),
+                                user -> Mapper.map(user.getUser(), UserDTO.class).username(),
                                 UserRoleMapping::getRole,
                                 (existing, replacement) -> existing
                         )),

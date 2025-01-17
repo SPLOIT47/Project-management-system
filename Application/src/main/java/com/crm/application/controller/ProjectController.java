@@ -4,14 +4,11 @@ import com.crm.application.dto.ProjectDTO;
 import com.crm.application.dto.UserDTO;
 import com.crm.application.service.ProjectService;
 import com.crm.application.session.SessionManager;
-import com.crm.domain.entity.Project;
 import com.crm.domain.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Controller
@@ -32,7 +29,7 @@ public class ProjectController {
         this.projectService.updateProject(projectDTO);
     }
 
-    public Stream<ProjectDTO> getProjectNamesByUsername(String username) {
+    public Stream<ProjectDTO> getProjectsByUsername(String username) {
         return this.projectService.getProjectDTOByProjectName(username);
     }
 

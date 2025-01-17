@@ -12,18 +12,17 @@ import com.crm.domain.entity.mapping.UserRoleMapping;
 import com.crm.domain.enums.UserRole;
 import com.crm.domain.repository.ProjectRepository;
 import com.crm.domain.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
@@ -63,30 +62,9 @@ public class ProjectService {
     public void updateProject(ProjectDTO projectDTO) {
         Project existringProject = this.projectRepository.getProjectById(projectDTO.id()).orElseThrow();
 
-        User manager = this.userRepository.findUserByUsername(projectDTO
-                        .users()
-                        .values()
-                        .stream()
-                        .filter(role -> role == UserRole.Manager)
-                        .findFirst()
-                        .toString())
-                .orElseThrow();
-
-        Collection<Task> tasks = existringProject.getTasks();
-        Collection<TaskDto> taskDtos = projectDTO.tasks();
-        Collection<Task> mergedTasks = this.taskService
-                .mergeTasks(taskDtos, tasks, existringProject)
-                .toList();
-
-
-        // FIXME: need to merge a map of users with roles, not only by id, coz now we lost role of each user in project
-
-        Collection<UserRoleMapping> mergedUsers = this.userService.mergeUserRoles(projectDTO.users(), existringProject.getProjectRoles()).toList();
-
         existringProject.setName(projectDTO.projectName());
         existringProject.setDescription(projectDTO.description());
-        existringProject.setTasks(mergedTasks);
-        existringProject.setProjectRoles((Set<UserRoleMapping>) mergedUsers);
+
         this.projectRepository.save(existringProject);
     }
 
@@ -94,17 +72,19 @@ public class ProjectService {
         return this.projectRepository
                 .getProjectUsersByProjectNameAndManagerName(projectName, managerName)
                 .stream()
-                .map(User -> Mapper.map(User, UserDTO.class))
+                .map(User -> Mapper.map(User.getUser(), UserDTO.class))
                 .toList()
                 .stream();
     }
 
+    @Transactional
     public void createProject(String managerName, String projectName, String description) {
         User manager = this.userRepository.findUserByUsername(managerName).orElseThrow();
         Project project = new Project(projectName, description, manager);
         this.projectRepository.save(project);
     }
 
+    @Transactional
     public void addUserToProject(User manager, String projectName, String username) {
         Optional<Project> existingProject = this.projectRepository
                 .getProjectByManagerAndProjectName(manager, projectName);
@@ -116,5 +96,6 @@ public class ProjectService {
         }
 
         existingProject.get().addUser(userToAdd.get(), UserRole.Employee);
+        this.projectRepository.save(existingProject.get());
     }
 }

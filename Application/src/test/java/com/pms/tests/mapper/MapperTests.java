@@ -52,42 +52,34 @@ public class MapperTests {
 
     @Test
     public void testProjectMapping() {
-        // Создаем менеджера
         User manager = new User("manager", "password");
 
-        // Создаем проект и передаем менеджера
         Project project = new Project("project", "some project", manager);
 
-        // Создаем пользователей
         User user1 = new User("user", "password");
         User user2 = new User("user2", "password2");
 
-        // Добавляем пользователей в проект
         project.addUser(user1, UserRole.Employee);
         project.addUser(user2, UserRole.Employee);
 
         assertNotNull(project.getManager());
 
-        // Проверяем маппинг
         ProjectDTO projectDTO = Mapper.map(project, ProjectDTO.class);
 
-        // Проверяем, что все поля проекта корректно замаплены
         assertEquals(projectDTO.projectName(), project.getName());
         assertEquals(projectDTO.description(), project.getDescription());
-        assertEquals(projectDTO.managerName(), project.getManager().getUsername()); // Добавлена проверка менеджера
+        assertEquals(projectDTO.managerName(), project.getManager().getUsername());
 
-        // Проверяем маппинг пользователей и их ролей
         for (var obj : projectDTO.users().entrySet()) {
             Optional<UserRoleMapping> user = project.getProjectRoles().stream().filter(mapping
                             -> mapping
                             .getUser()
                             .getUsername()
-                            .equals(obj.getKey().username()))
+                            .equals(obj.getKey()))
                     .findFirst();
 
             assertTrue(user.isPresent());
-            assertEquals(user.get().getUser().getUsername(), obj.getKey().username());
-            assertEquals(user.get().getUser().getPassword(), obj.getKey().password());
+            assertEquals(user.get().getUser().getUsername(), obj.getKey());
             assertEquals(user.get().getRole(), obj.getValue());
         }
     }

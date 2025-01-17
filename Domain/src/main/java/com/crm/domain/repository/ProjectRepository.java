@@ -3,6 +3,7 @@ package com.crm.domain.repository;
 import com.crm.domain.entity.Project;
 import com.crm.domain.entity.Task;
 import com.crm.domain.entity.User;
+import com.crm.domain.entity.mapping.UserRoleMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public interface ProjectRepository {
 
     List<Project> getProjectNamesRolesByUsername(String username);
 
-    List<User> getProjectUsersByProjectNameAndManagerName(String projectName, String managerName);
+    List<UserRoleMapping> getProjectUsersByProjectNameAndManagerName(String projectName, String managerName);
 
     List<User> getUsersByProjectId(UUID projectId);
 

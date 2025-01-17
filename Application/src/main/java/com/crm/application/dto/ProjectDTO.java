@@ -11,6 +11,6 @@ public record ProjectDTO(
         String projectName,
         String description,
         String managerName,
-        Map<UserDTO, UserRole> users,
+        Map<String, UserRole> users,
         Collection<TaskDto> tasks) {
 }

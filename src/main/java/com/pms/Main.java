@@ -1,6 +1,7 @@
 package com.pms;
 
 import com.crm.application.config.ApplicationConfig;
+import com.crm.application.config.MapperConfig;
 import com.crm.domain.config.DomainConfig;
 import com.crm.infrastructure.dataaccess.config.JpaConfig;
 import com.crm.presentation.config.PresentationConfig;
@@ -10,6 +11,9 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ComponentScan(basePackages = "com.crm.presentation.handler")
 public class Main extends Application {
@@ -22,7 +26,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         // Создаём Spring контекст
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.register(JpaConfig.class, ApplicationConfig.class, PresentationConfig.class, DomainConfig.class);
+        context.register(JpaConfig.class, ApplicationConfig.class, PresentationConfig.class, DomainConfig.class, MapperConfig.class);
         context.refresh();
 
         // Настройка PresentationConfig
